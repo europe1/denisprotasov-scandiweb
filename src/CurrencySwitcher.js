@@ -9,11 +9,11 @@ class CurrencySwitcher extends React.Component {
     super(props);
     this.state = {
       currencies: [],
-      mouseOver: false
+      open: false
     };
 
-    this.handleMouseOver = this.handleMouseOver.bind(this);
-    this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.chooseCurrency = this.chooseCurrency.bind(this);
   }
 
   componentDidMount() {
@@ -22,18 +22,16 @@ class CurrencySwitcher extends React.Component {
     });
   }
 
-  handleMouseOver() {
-    this.setState({mouseOver: true});
+  handleClick() {
+    this.setState((oldState) => {return {open: !oldState.open}});
   }
 
-  handleMouseLeave() {
-    this.setState({mouseOver: false});
+  chooseCurrency(label) {
+    this.context.selectCurrency(label);
   }
 
   render() {
     let selectedLabel = this.context.currency;
-    let selectCurrencyFunc = this.context.selectCurrency;
-
     let symbol = '$';
     let selectedCurrency = this.state.currencies.find(currency => currency.label === selectedLabel);
     if (selectedCurrency) {
@@ -41,12 +39,12 @@ class CurrencySwitcher extends React.Component {
     }
 
     return (
-      <div onClick={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} className='currency-wrapper'>
-        <CurrencyIcon symbol={symbol} mouseOver={this.state.mouseOver} />
-        {this.state.mouseOver ? (
+      <div onClick={this.handleClick} className='currency-wrapper'>
+        <CurrencyIcon symbol={symbol} open={this.state.open} />
+        {this.state.open ? (
           <div className='currency-list-wrapper'><div className='currency-list'>
             {this.state.currencies.map(currency => (
-              <div className='currency-entry' key={currency.label} onClick={() => selectCurrencyFunc(currency.label)}>
+              <div className='currency-entry' key={currency.label} onClick={() => this.chooseCurrency(currency.label)}>
                 {currency.symbol} {currency.label}</div>
             ))}
           </div></div>

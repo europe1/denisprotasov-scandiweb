@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { graphQuery } from './helpers';
+import { categoriesQuery, currenciesQuery } from './queries';
 
 import { CurrencyContext } from './CurrencyContext';
 import { CartContext } from './CartContext';
@@ -22,23 +22,38 @@ class App extends React.Component {
     };
 
     this.addToCart = product => {
+      const cartProductId = product.product.id + product.attributes.id();
       this.setState((oldState) => {
-        oldState.cartProducts[product.product.id] = product;
+        if (oldState.cartProducts[cartProductId]) {
+          oldState.cartProducts[cartProductId].quantity += 1;
+        } else {
+          oldState.cartProducts[cartProductId] = {
+            id: cartProductId,
+            attributes: product.attributes,
+            product: product.product,
+            quantity: 1
+          };
+        }
+
         return {cartProducts: oldState.cartProducts};
       });
     }
 
     this.removeFromCart = product => {
+      const cartProductId = product.product.id + product.attributes.id();
       this.setState((oldState) => {
-        delete oldState.cartProducts[product.product.id];
+        oldState.cartProducts[cartProductId].quantity -= 1;
+        if (oldState.cartProducts[cartProductId].quantity <= 0) {
+          delete oldState.cartProducts[cartProductId];
+        }
         return {cartProducts: oldState.cartProducts};
       });
     }
   }
 
   componentDidMount() {
-    graphQuery('{categories { name }}', data => this.updateCategories(data.data.categories));
-    graphQuery('{currencies { label }}', data => {
+    categoriesQuery(data => this.updateCategories(data.data.categories));
+    currenciesQuery(data => {
       this.state.selectedCurrency = data.data.currencies[0].label;
     });
   }

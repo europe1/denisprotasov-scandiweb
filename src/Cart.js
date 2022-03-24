@@ -1,28 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CartContext } from './CartContext';
-import { CurrencyContext } from './CurrencyContext';
+
 import Attribute from './Attribute';
+import CartGallery from './CartGallery';
+import CartTotal from './CartTotal';
+import CartPrice from './CartPrice';
 
 class Cart extends React.Component {
   addProduct(cartProduct) {
-    cartProduct.quantity += 1;
     this.context.addToCart(cartProduct);
   }
 
   removeProduct(cartProduct) {
-    cartProduct.quantity -= 1;
-    if (cartProduct.quantity <= 0) {
-      this.context.removeFromCart(cartProduct);
-    } else {
-      this.context.addToCart(cartProduct);
-    }
-  }
-
-  selectAttribute(productId, name, value) {
-    const product = this.context.products[productId];
-    product.attributes[name].value = value;
-    this.context.addToCart(product);
+    this.context.removeFromCart(cartProduct);
   }
 
   render() {
@@ -31,15 +22,15 @@ class Cart extends React.Component {
     if (products.length > 0) {
       length += ', ';
       length += products.length.toString();
-      length += products.length === 1 ? 'item' : 'items';
+      length += products.length === 1 ? ' item' : ' items';
     }
 
     const attributes = (cartProduct) => {
-      return Object.values(cartProduct.attributes).map((attribute) => (
+      return cartProduct.attributes.getAttributes().map((attribute) => (
         <Attribute name={attribute.name} key={attribute.name}
           selectedAttribute={attribute.value} values={attribute.values}
           type={attribute.type} className='cart-attribute'
-          selectAttribute={(name, value) => this.selectAttribute(cartProduct.product.id, name, value)} />
+          selectAttribute={(name, value) => {}} />
       ));
     };
 
@@ -56,7 +47,7 @@ class Cart extends React.Component {
                 <div className='cart-name'>{cartProduct.product.name}</div>
                 <CartPrice prices={cartProduct.product.prices} />
                 <div className='cart-attributes'>
-                  {this.props.isOverlay ? attributes(cartProduct)[0] : attributes(cartProduct)}
+                  {attributes(cartProduct)}
                 </div>
               </div>
               <div className='cart-middle'>
@@ -83,89 +74,5 @@ class Cart extends React.Component {
   }
 }
 Cart.contextType = CartContext;
-
-class CartPrice extends React.Component {
-  render() {
-    let currency = this.context.currency;
-    let price = this.props.prices.find(price => price.currency.label === currency);
-
-    return (
-      <div className='cart-price'>{price.currency.symbol}{price.amount}</div>
-    );
-  }
-}
-CartPrice.contextType = CurrencyContext;
-
-class CartTotal extends React.Component {
-  render() {
-    let currency = this.context.currency;
-    let total = 0;
-    let formatter = new Intl.NumberFormat('en-US', {style: 'currency', currency: currency});
-
-    this.props.cartProducts.forEach((cartProduct) => {
-      let price = cartProduct.product.prices.find((price) => price.currency.label === currency);
-      total += price.amount * cartProduct.quantity;
-    });
-
-    return (
-      <div className='cart-total'>
-        <div className='total-text'>Total</div>
-        <div className='total-amount'>{formatter.format(total)}</div>
-      </div>
-    );
-  }
-}
-CartTotal.contextType = CurrencyContext;
-
-class CartGallery extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentIndex: 0,
-      arrowsVisible: false
-    };
-
-    this.changeIndex = this.changeIndex.bind(this);
-    this.handleMouseOver = this.handleMouseOver.bind(this);
-    this.handleMouseLeave = this.handleMouseLeave.bind(this);
-  }
-
-  changeIndex(by) {
-    const maxIndex = this.props.images.length - 1;
-
-    this.setState((oldState) => {
-      let newIndex = oldState.currentIndex + by;
-      if (newIndex > maxIndex) newIndex = 0;
-      else if (newIndex < 0) newIndex = maxIndex;
-      return {currentIndex: newIndex};
-    });
-  }
-
-  handleMouseOver() {
-    this.setState({arrowsVisible: true});
-  }
-
-  handleMouseLeave() {
-    this.setState({arrowsVisible: false});
-  }
-
-  render() {
-    return (
-      <div className='cart-gallery' onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave}>
-        {this.state.arrowsVisible && (
-          <span className='arrow-left' onClick={() => this.changeIndex(-1)}>
-            <img className='gallery-arrow' src={require('./arrow-left.png')} />
-          </span>
-        )}
-        <img className='cart-image' src={this.props.images[this.state.currentIndex]} />
-        {this.state.arrowsVisible && (
-          <span className='arrow-right' onClick={() => this.changeIndex(1)}>
-            <img className='gallery-arrow' src={require('./arrow-right.png')} />
-          </span>
-        )}
-      </div>
-    );
-  }
-}
 
 export default Cart;

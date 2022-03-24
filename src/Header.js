@@ -1,9 +1,10 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+
 import CurrencySwitcher from './CurrencySwitcher';
 import CartIcon from './CartIcon';
 import Cart from './Cart';
 import Overlay from './Overlay';
+import HeaderCategory from './HeaderCategory';
 
 class Header extends React.Component {
   constructor(props) {
@@ -42,15 +43,6 @@ class Header extends React.Component {
           ) : undefined}
         </div>
       </div>
-    );
-  }
-}
-
-class HeaderCategory extends React.Component {
-  render() {
-    return (
-      <NavLink to={this.props.category.name} className={({isActive}) => isActive ? 'selected category' : 'category'}>
-        {this.props.category.name}</NavLink>
     );
   }
 }

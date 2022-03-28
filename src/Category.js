@@ -1,10 +1,8 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { categoryQuery } from './queries';
 import { CurrencyContext } from './CurrencyContext';
-import { CartContext } from './CartContext';
 
-import Attributes from './Attributes';
 import Product from './Product';
 
 function Category() {
@@ -20,24 +18,29 @@ class ProductList extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    categoryQuery(this.props.categoryName, data => this.updateProducts(data.data.category.products));
+  componentDidMount() {
+    this.updateProducts();
   }
 
-  updateProducts(allProducts) {
-    this.setState({products: allProducts});
+  componentDidUpdate(prevProps) {
+    if (this.props.categoryName !== prevProps.categoryName) this.updateProducts();
+  }
+
+  updateProducts() {
+    categoryQuery(this.props.categoryName, data => {
+      if (data.data.category) this.setState({products: data.data.category.products});
+      else this.setState({products: []});
+    });
   }
 
   render() {
-    let products = this.state.products;
-
     let currency = this.context.currency;
 
     return (
       <div>
         <h1 className='category-name'>{this.props.categoryName}</h1>
         <div className='products'>
-          {products.map((product) => (
+          {this.state.products.map((product) => (
             <Product product={product} active={product.inStock} currency={currency} key={product.id} />
           ))}
         </div>

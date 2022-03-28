@@ -5,6 +5,8 @@ import { categoriesQuery, currenciesQuery } from './queries';
 
 import { CurrencyContext } from './CurrencyContext';
 import { CartContext } from './CartContext';
+
+import Attributes from './Attributes';
 import Header from './Header';
 
 class App extends React.Component {
@@ -29,10 +31,12 @@ class App extends React.Component {
         } else {
           oldState.cartProducts[cartProductId] = {
             id: cartProductId,
-            attributes: product.attributes,
+            attributes: new Attributes(),
             product: product.product,
             quantity: 1
           };
+          oldState.cartProducts[cartProductId].attributes.fromAttributes(
+            product.attributes.getAttributes());
         }
 
         return {cartProducts: oldState.cartProducts};
@@ -54,7 +58,7 @@ class App extends React.Component {
   componentDidMount() {
     categoriesQuery(data => this.updateCategories(data.data.categories));
     currenciesQuery(data => {
-      this.state.selectedCurrency = data.data.currencies[0].label;
+      this.setState({selectedCurrency: data.data.currencies[0].label});
     });
   }
 

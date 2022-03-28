@@ -41,7 +41,7 @@ class Cart extends React.Component {
         </div>
         <div className={'cart-items' + (this.props.isOverlay ? ' cart-overlay' : '')}>
           {products.map((cartProduct) => (
-            <div className='cart-item' key={cartProduct.product.id}>
+            <div className='cart-item' key={cartProduct.id}>
               <div className='cart-left'>
                 <div className='cart-brand'>{cartProduct.product.brand}</div>
                 <div className='cart-name'>{cartProduct.product.name}</div>

@@ -1,17 +1,27 @@
 class Attribute {
-  constructor(name, type, items) {
+  constructor(name, type, value, values) {
     this.name = name;
     this.type = type;
-    this.value = items[0].value;
-    this.values = items.map(item => item.value);
+    this.value = value;
+    this.values = values;
   }
 }
 
 class Attributes {
-  constructor(attributes) {
+  constructor() {
     this.attributes = {};
+  }
+
+  fromDB(attributes) {
     attributes.forEach(attr =>
-      this.attributes[attr.name] = new Attribute(attr.name, attr.type, attr.items));
+      this.attributes[attr.name] = new Attribute(attr.name, attr.type, attr.items[0].value,
+        attr.items.map(item => item.value)));
+  }
+
+  fromAttributes(attributes) {
+    Object.values(attributes).forEach(attr => {
+      this.attributes[attr.name] = new Attribute(attr.name, attr.type, attr.value, attr.values);
+    });
   }
 
   selectAttribute(name, value) {

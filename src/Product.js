@@ -27,8 +27,9 @@ class Product extends React.Component {
 
     const cartProduct = {
       product: this.props.product,
-      attributes: new Attributes(this.props.product.attributes)
-    }
+      attributes: new Attributes()
+    };
+    cartProduct.attributes.fromDB(this.props.product.attributes);
 
     this.context.addToCart(cartProduct);
   }
@@ -37,7 +38,7 @@ class Product extends React.Component {
     let active = this.props.active;
     const buyIcon = (
       <div className={this.state.mouseOver ? 'buy-icon-wrapper' : 'buy-icon-wrapper hidden'} onClick={this.addToCart}>
-        <img className='buy-icon' src={require('./shopping-cart-white.png')} />
+        <img className='buy-icon' src={require('./shopping-cart-white.png')} alt='shopping cart' />
       </div>
     );
 
@@ -45,7 +46,7 @@ class Product extends React.Component {
       <Link to={'/product/' + this.props.product.id} onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave} className='product hover'>
         <div className='product-image-container'>
-          <img className='product-image' src={this.props.product.gallery[0]} />
+          <img className='product-image' src={this.props.product.gallery[0]} alt='product' />
           {!active ? (<div className='no-stock-cover'>Out of stock</div>) : buyIcon}
         </div>
         <div className={active ? 'product-list-name' : 'product-list-name no-stock'}>

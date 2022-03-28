@@ -478,6 +478,10 @@
   gap: 7px;
 }
 
+.cart-attribute .attribute-value-swatch, .cart-attribute .attribute-value-text {
+  cursor: default;
+}
+
 .cart-overlay .cart-item .attribute-value-text {
   font-size: 0.7em;
   padding: 4px 7px;

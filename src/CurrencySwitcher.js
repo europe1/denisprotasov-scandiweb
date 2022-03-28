@@ -12,14 +12,29 @@ class CurrencySwitcher extends React.Component {
       open: false
     };
 
+    this.wrapperRef = React.createRef();
+    this.handleClickOutside = this.handleClickOutside.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.chooseCurrency = this.chooseCurrency.bind(this);
   }
 
   componentDidMount() {
     currenciesQuery(data => {
-      this.state.currencies = data.data.currencies;
+      this.setState({currencies: data.data.currencies});
     });
+
+    document.addEventListener("mousedown", this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.handleClickOutside);
+  }
+
+  handleClickOutside(e) {
+    if (this.wrapperRef && !this.wrapperRef.current.contains(e.target) &&
+      this.state.open) {
+      this.setState({open: false});
+    }
   }
 
   handleClick() {
@@ -39,7 +54,7 @@ class CurrencySwitcher extends React.Component {
     }
 
     return (
-      <div onClick={this.handleClick} className='currency-wrapper'>
+      <div onClick={this.handleClick} ref={this.wrapperRef} className='currency-wrapper'>
         <CurrencyIcon symbol={symbol} open={this.state.open} />
         {this.state.open ? (
           <div className='currency-list-wrapper'><div className='currency-list'>

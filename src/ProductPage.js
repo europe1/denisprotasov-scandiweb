@@ -1,8 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { productQuery } from './queries';
-import { CurrencyContext } from './CurrencyContext';
-import { CartContext } from './CartContext';
 
 import Attributes from './Attributes';
 import FullAttribute from './FullAttribute';
@@ -34,11 +32,14 @@ class ProductPage extends React.Component {
   }
 
   updateProduct(product) {
+    const attributes = new Attributes();
+    attributes.fromDB(product.attributes);
     product.id = this.props.productId;
+
     this.setState({
       product: product,
       productLoaded: true,
-      selectedAttributes: new Attributes(product.attributes)
+      selectedAttributes: attributes
     });
   }
 
